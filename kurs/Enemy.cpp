@@ -18,7 +18,7 @@ void typeEnemy(Game& game)
 		else game.enemy[i].type = 1;
 }
 
-void spawn_enemy(Game& game) //функция спавна противников
+void spawn_enemy(Game& game) 
 {
 	typeEnemy(game);
 	int amount = 0;
@@ -42,18 +42,18 @@ void spawn_enemy(Game& game) //функция спавна противников
 		{
 		case 0:
 		{
-			game.enemy[i].damage = 15;
+			game.enemy[i].damage = 0;
 			game.enemy[i].HP = 100;
-			game.enemy[i].speed = 0.7;
+			game.enemy[i].speed = 0.0;
 			game.enemy[i].Depth = 8;
 			game.enemy[i].direct = rand() % 3;
 		}
 		break;
 		case 1:
 		{
-			game.enemy[i].damage = 20;
+			game.enemy[i].damage = 0;
 			game.enemy[i].HP = 200;
-			game.enemy[i].speed = 0.7;
+			game.enemy[i].speed = 0.0;
 			game.enemy[i].Depth = 5;
 			game.enemy[i].direct = rand() % 3;
 		}
@@ -94,8 +94,12 @@ void Draw_enemy(Game& game, Stack* s, int floor, int Ceiling)
 	int w_1 = tmp * game.enemy->texture_en.w / game.enemy->texture_en.h;
 	for (Elem* elem = s->top; elem; elem = elem->next)
 	{
-		SDL_Rect TEXen = { s->top->x,Ceiling,w_1,tmp };
-		SDL_RenderCopy(ren, game.enemy[elem->number].texture_en.tex, NULL, &TEXen);
+		if (!elem->drown)
+		{
+			SDL_Rect TEXen = { s->top->x,Ceiling,w_1,tmp };
+			SDL_RenderCopy(ren, game.enemy[elem->number].texture_en.tex, NULL, &TEXen);
+			elem->drown = true;
+		}
 	};
 }
 
@@ -103,55 +107,57 @@ void enemy_on_window(Game &game)
 {
 	Stack s;
 	StackInit(&s);
-	for (int x = 0; x < game.winWidth; x += 16) // x проходит по всей длине экрана с заданным шагом 
+	for (int x = 0; x < game.winWidth; x += 16) 
 	{
-		float fRayAngle = (game.player.direct - game.player.FOV / 2.0f) + ((float)x / (float)game.winWidth) * game.player.FOV;  //расчет каждого луча относительно x
+		float fRayAngle = (game.player.direct - game.player.FOV / 2.0f) + ((float)x / (float)game.winWidth) * game.player.FOV;  //СЂР°СЃС‡РµС‚ РєР°Р¶РґРѕРіРѕ Р»СѓС‡Р° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ x
 
-		float fStepSize = 0.1f; // шаг на который увеличивается расстояние
-		float fDistanceToWall = 0.0f; //дистанция до стены
+		float fStepSize = 0.1f; 
+		float fDistanceToWall = 0.0f; 
 
-		bool HitWall = false; // врезался ли в стену
-		bool HitEnemy = false;// врезался ли луч в противника
+		bool HitWall = false; 
+		bool HitEnemy = false;
 
 		float fEyeX = sinf(fRayAngle);
 		float fEyeY = cosf(fRayAngle);
 
-		while (!HitWall && fDistanceToWall < game.player.Depth && !HitEnemy) // пока луч не уперся в стену и меньше чем поле зрения цикл будет работать
+		while (!HitWall && fDistanceToWall < game.player.Depth && !HitEnemy) 
 		{
 			fDistanceToWall += fStepSize;
-			int nTestX = (int)(game.player.X + fEyeX * fDistanceToWall); // координаты точки считаются каждый шаг позже будут сравниваться с координатами стен
+			int nTestX = (int)(game.player.X + fEyeX * fDistanceToWall); 
 			int nTestY = (int)(game.player.Y + fEyeY * fDistanceToWall);
 			if (nTestX < 0 || nTestX >= game.map_width || nTestY < 0 || nTestY >= game.map_height)
 			{
-				HitWall = true;		//если дистаниция больще чем видимость 
+				HitWall = true;		
 				fDistanceToWall = game.player.Depth;
 			}
 			else
 			{
-				if (game.map[(int)nTestY][(int)nTestX] == '#') // проверка на то что луч врезался в стену
+				if (game.map[(int)nTestY][(int)nTestX] == '#') 
 				{
 					HitWall = true;
 
 				}
-				if (game.map[(int)nTestY][(int)nTestX] == '@')// проверка на то что луч врезался в врага
+				if (game.map[(int)nTestY][(int)nTestX] == '@')
 				{
-					for(int i=0;i<AMOUNT_ENEMY;i++)
+					for (int i = 0; i < AMOUNT_ENEMY; i++)
+					{
 						if ((int)nTestY == (int)game.enemy[i].Y && (int)nTestX == (int)game.enemy[i].X)
 						{
 							if (StackIsOrig(&s, i))
 							{
 								StackPush(&s, i, x);
-								// передает номер противника и координаты пикселя 
+								
 								break;
 							}
 						}
-					HitEnemy = true;
+						HitEnemy = true;
+					}
 				}
 			}
 		}
 
-		int nCeiling = (float)(game.winHeight / 2.0) - game.winHeight / ((float)fDistanceToWall);//расчет линии неба или потолка(тут без разницы)
-		int nFloor = game.winHeight - nCeiling;//расчет линии пола
+		int nCeiling = (float)(game.winHeight / 2.0) - game.winHeight / ((float)fDistanceToWall);
+		int nFloor = game.winHeight - nCeiling;//СЂР°СЃС‡РµС‚ Р»РёРЅРёРё РїРѕР»Р°
 		Draw_enemy(game, &s, nFloor, nCeiling);
 
 	}
@@ -182,18 +188,18 @@ void enemy_damage(Game& game, unsigned int RealTime)
 				nTestY = (int)(game.enemy[i].Y + fEyeY * fDistanceToWall);
 				if (nTestX < 0 || nTestX >= game.map_width || nTestY < 0 || nTestY >= game.map_height)
 				{
-					HitWall = true;		//если дистаниция больще чем видимость 
+					HitWall = true;		
 					fDistanceToWall = game.player.Depth;
 				}
 				else
 				{
-					if (game.map[(int)nTestY][(int)nTestX] == '#') // проверка на то что луч врезался в стену
+					if (game.map[(int)nTestY][(int)nTestX] == '#') 
 					{
 						HitWall = true;
 
 					}
 
-					if ((int)nTestY == (int)game.player.Y && (int)nTestX == (int)game.player.X && (RealTime - game.enemy[i].tmpTime) >= 5000)//проверка на поподание
+					if ((int)nTestY == (int)game.player.Y && (int)nTestX == (int)game.player.X && (RealTime - game.enemy[i].tmpTime) >= 5000)//РїСЂРѕРІРµСЂРєР° РЅР° РїРѕРїРѕРґР°РЅРёРµ
 					{
 						game.player.HP -= game.enemy[i].damage;
 						game.enemy[i].tmpTime = SDL_GetTicks();
