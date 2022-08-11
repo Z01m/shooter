@@ -1,10 +1,12 @@
 #pragma once
 struct Elem
 {
+	bool drawn;
 	int number;
 	int x;
 	Elem* next;
 };
+
 
 struct Stack
 {
