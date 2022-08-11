@@ -19,6 +19,7 @@ int StackPush(Stack* s, int number, int x)
 	elem->next = s->top;
 	elem->number = number;
 	elem->x = x;
+	elem->drawn = false;
 	s->top = elem;
 	return 1;
 }
