@@ -94,11 +94,11 @@ void Draw_enemy(Game& game, Stack* s, int floor, int Ceiling)
 	int w_1 = tmp * game.enemy->texture_en.w / game.enemy->texture_en.h;
 	for (Elem* elem = s->top; elem; elem = elem->next)
 	{
-		if (!elem->drown)
+		if (!elem->drawn)
 		{
 			SDL_Rect TEXen = { s->top->x,Ceiling,w_1,tmp };
 			SDL_RenderCopy(ren, game.enemy[elem->number].texture_en.tex, NULL, &TEXen);
-			elem->drown = true;
+			elem->drawn = true;
 		}
 	};
 }
