@@ -10,6 +10,8 @@ const char      MENU_OPTIONS[][9] = { "start", "settings", "exit" };
 const SDL_Color COLOR_OF_ACTIVE_OPTION = { 255, 0, 0, 255 };
 const SDL_Color COLOR_OF_NON_ACTIVE_OPTION = { 150, 150, 220, 255 };
 
+
+
 #define AMOUNT_ENEMY  12
 #define ENEMY_TYPE    2
 const char ENEMY_FILENAMES[ENEMY_TYPE][40] = {
