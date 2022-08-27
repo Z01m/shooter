@@ -27,7 +27,7 @@ void spawn_enemy(Game& game) //функция спавна противников
 	{
 		X = rand() % (game.map_width);
 		Y = rand() % (game.map_height);
-		if (game.map[Y][X] != '#' && game.map[Y][X] != '@')
+		if (game.map[Y][X] != '#' && game.map[Y][X] != '@' && game.map[Y][X] != '^' && game.map[Y][X] != '*')
 		{
 			game.enemy[amount].X = X;
 			game.enemy[amount].Y = Y;
@@ -70,8 +70,10 @@ void run_enemy(Game& game)
 		game.enemy[i].X += sinf(game.enemy[i].direct) * game.enemy[i].speed * 0.25;
 		game.enemy[i].Y += cosf(game.enemy[i].direct) * game.enemy[i].speed * 0.25;
 
-		if (game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '#' ||
-			game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '@')
+		if (game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '#'||
+			game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '@'||
+			game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '*'||
+			game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '^')
 		{
 
 			game.enemy[i].X -= sinf(game.enemy[i].direct) * game.enemy[i].speed * 0.25;

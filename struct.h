@@ -64,6 +64,9 @@ struct Player
 	float Depth = 12.0;
 	float Speed = 0.75;
 	int type_weapon=0;
+
+	int map_num = 0;
+	bool key = false;
 };
 
 struct RGB

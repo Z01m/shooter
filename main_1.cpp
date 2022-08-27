@@ -20,7 +20,7 @@ int main(int argc, char* arg0s[])
 {
 	
 	Game game;
-	LoadMap(game);
+	LoadMap(game, game.player.map_num);
 	srand(time(0));
 	ReadPosition(game.player);
 	spawn_enemy(game);
@@ -86,7 +86,7 @@ int main(int argc, char* arg0s[])
 		SDL_RenderCopy(ren, game.texture.tex, NULL, &r);
 		SDL_DestroyTexture(game.texture.tex);
 		SDL_RenderPresent(ren);
-		SDL_Delay(5000);
+		SDL_Delay(3000);
 	SavePosition(game.player);
 
 	printf("%d", game.player.score);

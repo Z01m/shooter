@@ -122,7 +122,9 @@ void GameUpdate(Game& game, unsigned int RealTime)
 	case GAME_STATE_PLAY:
 		run_enemy(game);
 		enemy_damage(game, RealTime);
-
+		KeepKey(game);
+		UseKey(game);
+		ChangeMap(game);
 		GameEnd(game);
 		break;
 	case GAME_STATE_EXIT:
@@ -144,11 +146,12 @@ void Game_draw_process(Game& game)
 		float fDistanceToWall = 0.0f; //дистанция до стены
 
 		bool HitWall = false; // врезался ли в стену
+		bool HitDoor = false;
 
 		float fEyeX = sinf(fRayAngle);
 		float fEyeY = cosf(fRayAngle);
 
-		while (!HitWall && fDistanceToWall < game.player.Depth ) // пока луч не уперся в стену и меньше чем поле зрения цикл будет работать
+		while (!HitWall && fDistanceToWall < game.player.Depth && !HitDoor ) // пока луч не уперся в стену и меньше чем поле зрения цикл будет работать
 		{
 			fDistanceToWall += fStepSize;
 			int nTestX = (int)(game.player.X + fEyeX * fDistanceToWall); // координаты точки считаются каждый шаг позже будут сравниваться с координатами стен
@@ -163,44 +166,52 @@ void Game_draw_process(Game& game)
 				if (game.map[(int)nTestY][(int)nTestX] == '#') // проверка на то что луч врезался в стену
 				{
 					HitWall = true;
-
 				}
-				
+				if (game.map[(int)nTestY][(int)nTestX] == '^')
+				{
+					HitDoor = true;
+				}
 			}
 		}
 
 		int nCeiling = (float)(game.winHeight / 2.0) - game.winHeight / ((float)fDistanceToWall);//расчет линии неба или потолка(тут без разницы)
 		int nFloor = game.winHeight - nCeiling + 48;//расчет линии пола
 		// раскраска стен и неба
-		if ( fDistanceToWall <= game.player.Depth / 4.0f) // ифы красят стены в зависимости от дальности в задданный цвет
+		if (!HitDoor && fDistanceToWall <= game.player.Depth / 4.0f) // ифы красят стены в зависимости от дальности в задданный цвет
 		{
 			game.rgb.red = 136;
 			game.rgb.green = 69;
 			game.rgb.blue = 53;
 		}
-		else if ( fDistanceToWall < game.player.Depth / 3.0f)
+		else if (!HitDoor && fDistanceToWall < game.player.Depth / 3.0f)
 		{
 			game.rgb.red = 99;
 			game.rgb.green = 51;
 			game.rgb.blue = 39;
 		}
-		else if ( fDistanceToWall < game.player.Depth / 2.0f)
+		else if (!HitDoor && fDistanceToWall < game.player.Depth / 2.0f)
 		{
 			game.rgb.red = 61;
 			game.rgb.green = 31;
 			game.rgb.blue = 24;
 		}
-		else if ( fDistanceToWall < game.player.Depth)
+		else if (!HitDoor && fDistanceToWall < game.player.Depth)
 		{
 			game.rgb.red = 26;
 			game.rgb.green = 13;
 			game.rgb.blue = 10;
 		}
-		else 
+		else if(!HitDoor)
 		{
 			game.rgb.red = 138;
 			game.rgb.green = 43;
 			game.rgb.blue = 227;
+		}
+		else
+		{
+			game.rgb.red = 202;
+			game.rgb.green = 58;
+			game.rgb.blue = 39;
 		}
 
 
@@ -233,7 +244,9 @@ void Game_draw_process(Game& game)
 		}
 
 	}
-	 r = { 0,0,4,4 }; // тут начинается отображение карты
+	 r = { 0,0,4,4 };// тут начинается отображение карты
+
+
 	for (int x = 0; x < game.map_width; x++)
 	{
 		r.x = x * 12;
@@ -250,9 +263,16 @@ void Game_draw_process(Game& game)
 				SDL_SetRenderDrawColor(ren, 128, 0, 50, 255);
 				SDL_RenderFillRect(ren, &r);
 			}
+			if (game.map[y][x] == '*')
+			{
+				SDL_SetRenderDrawColor(ren, 0, 48, 50, 255);
+				SDL_RenderFillRect(ren, &r);
+			}
 
 		}
 	}
+	
+	
 	SDL_SetRenderDrawColor(ren, 0, 100, 0, 255);
 	r.x = game.player.X * 12;
 	r.y = game.player.Y * 12;
