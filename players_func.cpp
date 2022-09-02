@@ -2,20 +2,23 @@
 #include"players_func.h"
 #include<SDL.h>
 #include"Weapons.h"
+#include"enemy.h"
 
 void movement(Game& game,unsigned int RealTime)
 {
 	unsigned int del_time = 0;
-	if (!game.keys.right && game.keys.left)  // поворот камеры
+	if (!game.keys.right && game.keys.left)  // ГЇГ®ГўГ®Г°Г®ГІ ГЄГ Г¬ГҐГ°Г»
 		game.player.direct -= (game.player.Speed * 0.15f);
 	if (game.keys.right && !game.keys.left)
 		game.player.direct += (game.player.Speed * 0.15f);
-	if (game.keys.up && !game.keys.down) //движение
+	if (game.keys.up && !game.keys.down) //Г¤ГўГЁГ¦ГҐГ­ГЁГҐ
 	{
 
 		game.player.X += sinf(game.player.direct) * game.player.Speed * 0.25;
 		game.player.Y += cosf(game.player.direct) * game.player.Speed * 0.25;
-		if (game.map[(int)game.player.Y][(int)game.player.X] == '#' || game.map[(int)game.player.Y][(int)game.player.X] == '@')
+		if (game.map[(int)game.player.Y][(int)game.player.X] == '#'|| 
+			game.map[(int)game.player.Y][(int)game.player.X] == '@'||
+			game.map[(int)game.player.Y][(int)game.player.X] == '^')
 		{
 
 			game.player.X -= sinf(game.player.direct) * game.player.Speed * 0.25;
@@ -27,7 +30,9 @@ void movement(Game& game,unsigned int RealTime)
 
 		game.player.X -= sinf(game.player.direct) * game.player.Speed * 0.25;
 		game.player.Y -= cosf(game.player.direct) * game.player.Speed * 0.25;
-		if (game.map[(int)game.player.Y][(int)game.player.X] == '#' || game.map[(int)game.player.Y][(int)game.player.X] == '@')
+		if (game.map[(int)game.player.Y][(int)game.player.X] == '#' ||
+			game.map[(int)game.player.Y][(int)game.player.X] == '@' ||
+			game.map[(int)game.player.Y][(int)game.player.X] == '^')
 		{
 
 			game.player.X += sinf(game.player.direct) * game.player.Speed * 0.25;
@@ -100,12 +105,12 @@ void ReadPosition(Player& player)
 	fclose(f);
 }
 
-void LoadMap(Game& game)
+void LoadMap(Game& game, int num)
 {
 	FILE* ft;
-	if (fopen_s(&ft, "maps/map_1.txt", "rt") != 0)
+	if (fopen_s(&ft, MAP_FILENAMES[num], "rt") != 0)
 	{
-		printf("Ошибка чтения!");
+		printf("ГЋГёГЁГЎГЄГ  Г·ГІГҐГ­ГЁГї!");
 		exit(1);
 	}
 	else
@@ -119,6 +124,43 @@ void LoadMap(Game& game)
 			fscanf_s(ft, "\n");
 		}
 
+	}
+}
+
+void ChangeMap(Game& game)
+{
+	if (game.map[(int)game.player.X][(int)game.player.Y] == '*')
+	{
+		game.player.map_num++;
+		LoadMap(game, game.player.map_num);
+		spawn_enemy(game);
+	}
+}
+
+void KeepKey(Game& game)
+{
+	int k = 0;
+	for (int i = 0; i < AMOUNT_ENEMY; i++)
+	{
+		if (game.enemy[i].HP <= 0)
+			k++;
+	}
+	if (k == AMOUNT_ENEMY)
+		game.player.key = true;
+}
+
+void UseKey(Game& game)
+{
+	if (game.player.key)
+	{
+		for (int i = 0; i < game.map_width; i++)
+		{
+			for (int j = 0; j < game.map_height; j++)
+			{
+				if (game.map[i][j] == '^')
+					game.map[i][j] = '.';
+			}
+		}
 	}
 }
 

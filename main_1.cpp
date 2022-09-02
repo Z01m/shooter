@@ -7,7 +7,7 @@
 #include"Window.h"
 #include"Game.h"
 #include"Weapons.h"
-
+#include"Menu.h"
 #include"Players_func.h"
 
 
@@ -20,7 +20,7 @@ int main(int argc, char* arg0s[])
 {
 	
 	Game game;
-	LoadMap(game);
+	LoadMap(game, game.player.map_num);
 	srand(time(0));
 	ReadPosition(game.player);
 	spawn_enemy(game);
@@ -74,9 +74,21 @@ int main(int argc, char* arg0s[])
 		SDL_RenderPresent(ren);
 		SDL_Delay(50);
 	}
-
-	SavePosition(game.player);
 	Game_score(game);
+	char str[100];
+		SDL_SetRenderDrawColor(ren, 0, 0, 89, 255);
+		SDL_RenderClear(ren);
+		sprintf_s(str, "Game Over\nScore %i\n", game.player.score);
+		game.texture = loadFont(str, MENU_FONTNAME, COLOR_OF_ACTIVE_OPTION, MENU_FONT_HGT + 30);
+		SDL_Rect r = {(win_width - game.texture.dstrect.w)/2 , (win_height - game.texture.dstrect.h) / 2, 0, 0 };
+		r.w = game.texture.dstrect.w;
+		r.h = game.texture.dstrect.h;
+		SDL_RenderCopy(ren, game.texture.tex, NULL, &r);
+		SDL_DestroyTexture(game.texture.tex);
+		SDL_RenderPresent(ren);
+		SDL_Delay(3000);
+	SavePosition(game.player);
+
 	printf("%d", game.player.score);
 	DeInit(0);
 	return 0;

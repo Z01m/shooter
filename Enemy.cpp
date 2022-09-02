@@ -18,7 +18,7 @@ void typeEnemy(Game& game)
 		else game.enemy[i].type = 1;
 }
 
-void spawn_enemy(Game& game) //функция спавна противников
+void spawn_enemy(Game& game) //ГґГіГ­ГЄГ¶ГЁГї Г±ГЇГ ГўГ­Г  ГЇГ°Г®ГІГЁГўГ­ГЁГЄГ®Гў
 {
 	typeEnemy(game);
 	int amount = 0;
@@ -27,7 +27,7 @@ void spawn_enemy(Game& game) //функция спавна противников
 	{
 		X = rand() % (game.map_width);
 		Y = rand() % (game.map_height);
-		if (game.map[Y][X] != '#' && game.map[Y][X] != '@')
+		if (game.map[Y][X] != '#' && game.map[Y][X] != '@' && game.map[Y][X] != '^' && game.map[Y][X] != '*')
 		{
 			game.enemy[amount].X = X;
 			game.enemy[amount].Y = Y;
@@ -70,8 +70,10 @@ void run_enemy(Game& game)
 		game.enemy[i].X += sinf(game.enemy[i].direct) * game.enemy[i].speed * 0.25;
 		game.enemy[i].Y += cosf(game.enemy[i].direct) * game.enemy[i].speed * 0.25;
 
-		if (game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '#' ||
-			game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '@')
+		if (game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '#'||
+			game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '@'||
+			game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '*'||
+			game.map[(int)game.enemy[i].Y][(int)game.enemy[i].X] == '^')
 		{
 
 			game.enemy[i].X -= sinf(game.enemy[i].direct) * game.enemy[i].speed * 0.25;
@@ -107,37 +109,37 @@ void enemy_on_window(Game &game)
 {
 	Stack s;
 	StackInit(&s);
-	for (int x = 0; x < game.winWidth; x += 16) // x проходит по всей длине экрана с заданным шагом 
+	for (int x = 0; x < game.winWidth; x += 16) // x ГЇГ°Г®ГµГ®Г¤ГЁГІ ГЇГ® ГўГ±ГҐГ© Г¤Г«ГЁГ­ГҐ ГЅГЄГ°Г Г­Г  Г± Г§Г Г¤Г Г­Г­Г»Г¬ ГёГ ГЈГ®Г¬ 
 	{
-		float fRayAngle = (game.player.direct - game.player.FOV / 2.0f) + ((float)x / (float)game.winWidth) * game.player.FOV;  //расчет каждого луча относительно x
+		float fRayAngle = (game.player.direct - game.player.FOV / 2.0f) + ((float)x / (float)game.winWidth) * game.player.FOV;  //Г°Г Г±Г·ГҐГІ ГЄГ Г¦Г¤Г®ГЈГ® Г«ГіГ·Г  Г®ГІГ­Г®Г±ГЁГІГҐГ«ГјГ­Г® x
 
-		float fStepSize = 0.1f; // шаг на который увеличивается расстояние
-		float fDistanceToWall = 0.0f; //дистанция до стены
+		float fStepSize = 0.1f; // ГёГ ГЈ Г­Г  ГЄГ®ГІГ®Г°Г»Г© ГіГўГҐГ«ГЁГ·ГЁГўГ ГҐГІГ±Гї Г°Г Г±Г±ГІГ®ГїГ­ГЁГҐ
+		float fDistanceToWall = 0.0f; //Г¤ГЁГ±ГІГ Г­Г¶ГЁГї Г¤Г® Г±ГІГҐГ­Г»
 
-		bool HitWall = false; // врезался ли в стену
-		bool HitEnemy = false;// врезался ли луч в противника
+		bool HitWall = false; // ГўГ°ГҐГ§Г Г«Г±Гї Г«ГЁ Гў Г±ГІГҐГ­Гі
+		bool HitEnemy = false;// ГўГ°ГҐГ§Г Г«Г±Гї Г«ГЁ Г«ГіГ· Гў ГЇГ°Г®ГІГЁГўГ­ГЁГЄГ 
 
 		float fEyeX = sinf(fRayAngle);
 		float fEyeY = cosf(fRayAngle);
 
-		while (!HitWall && fDistanceToWall < game.player.Depth && !HitEnemy) // пока луч не уперся в стену и меньше чем поле зрения цикл будет работать
+		while (!HitWall && fDistanceToWall < game.player.Depth && !HitEnemy) // ГЇГ®ГЄГ  Г«ГіГ· Г­ГҐ ГіГЇГҐГ°Г±Гї Гў Г±ГІГҐГ­Гі ГЁ Г¬ГҐГ­ГјГёГҐ Г·ГҐГ¬ ГЇГ®Г«ГҐ Г§Г°ГҐГ­ГЁГї Г¶ГЁГЄГ« ГЎГіГ¤ГҐГІ Г°Г ГЎГ®ГІГ ГІГј
 		{
 			fDistanceToWall += fStepSize;
-			int nTestX = (int)(game.player.X + fEyeX * fDistanceToWall); // координаты точки считаются каждый шаг позже будут сравниваться с координатами стен
+			int nTestX = (int)(game.player.X + fEyeX * fDistanceToWall); // ГЄГ®Г®Г°Г¤ГЁГ­Г ГІГ» ГІГ®Г·ГЄГЁ Г±Г·ГЁГІГ ГѕГІГ±Гї ГЄГ Г¦Г¤Г»Г© ГёГ ГЈ ГЇГ®Г§Г¦ГҐ ГЎГіГ¤ГіГІ Г±Г°Г ГўГ­ГЁГўГ ГІГјГ±Гї Г± ГЄГ®Г®Г°Г¤ГЁГ­Г ГІГ Г¬ГЁ Г±ГІГҐГ­
 			int nTestY = (int)(game.player.Y + fEyeY * fDistanceToWall);
 			if (nTestX < 0 || nTestX >= game.map_width || nTestY < 0 || nTestY >= game.map_height)
 			{
-				HitWall = true;		//если дистаниция больще чем видимость 
+				HitWall = true;		//ГҐГ±Г«ГЁ Г¤ГЁГ±ГІГ Г­ГЁГ¶ГЁГї ГЎГ®Г«ГјГ№ГҐ Г·ГҐГ¬ ГўГЁГ¤ГЁГ¬Г®Г±ГІГј 
 				fDistanceToWall = game.player.Depth;
 			}
 			else
 			{
-				if (game.map[(int)nTestY][(int)nTestX] == '#') // проверка на то что луч врезался в стену
+				if (game.map[(int)nTestY][(int)nTestX] == '#') // ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГІГ® Г·ГІГ® Г«ГіГ· ГўГ°ГҐГ§Г Г«Г±Гї Гў Г±ГІГҐГ­Гі
 				{
 					HitWall = true;
 
 				}
-				if (game.map[(int)nTestY][(int)nTestX] == '@')// проверка на то что луч врезался в врага
+				if (game.map[(int)nTestY][(int)nTestX] == '@')// ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГІГ® Г·ГІГ® Г«ГіГ· ГўГ°ГҐГ§Г Г«Г±Гї Гў ГўГ°Г ГЈГ 
 				{
 					for (int i = 0; i < AMOUNT_ENEMY; i++)
 					{
@@ -146,7 +148,7 @@ void enemy_on_window(Game &game)
 							if (StackIsOrig(&s, i))
 							{
 								StackPush(&s, i, x);
-								// передает номер противника и координаты пикселя 
+								// ГЇГҐГ°ГҐГ¤Г ГҐГІ Г­Г®Г¬ГҐГ° ГЇГ°Г®ГІГЁГўГ­ГЁГЄГ  ГЁ ГЄГ®Г®Г°Г¤ГЁГ­Г ГІГ» ГЇГЁГЄГ±ГҐГ«Гї 
 								break;
 							}
 						}
@@ -156,8 +158,8 @@ void enemy_on_window(Game &game)
 			}
 		}
 
-		int nCeiling = (float)(game.winHeight / 2.0) - game.winHeight / ((float)fDistanceToWall);//расчет линии неба или потолка(тут без разницы)
-		int nFloor = game.winHeight - nCeiling;//расчет линии пола
+		int nCeiling = (float)(game.winHeight / 2.0) - game.winHeight / ((float)fDistanceToWall);//Г°Г Г±Г·ГҐГІ Г«ГЁГ­ГЁГЁ Г­ГҐГЎГ  ГЁГ«ГЁ ГЇГ®ГІГ®Г«ГЄГ (ГІГіГІ ГЎГҐГ§ Г°Г Г§Г­ГЁГ¶Г»)
+		int nFloor = game.winHeight - nCeiling;//Г°Г Г±Г·ГҐГІ Г«ГЁГ­ГЁГЁ ГЇГ®Г«Г 
 		Draw_enemy(game, &s, nFloor, nCeiling);
 
 	}
@@ -188,18 +190,18 @@ void enemy_damage(Game& game, unsigned int RealTime)
 				nTestY = (int)(game.enemy[i].Y + fEyeY * fDistanceToWall);
 				if (nTestX < 0 || nTestX >= game.map_width || nTestY < 0 || nTestY >= game.map_height)
 				{
-					HitWall = true;		//если дистаниция больще чем видимость 
+					HitWall = true;		//ГҐГ±Г«ГЁ Г¤ГЁГ±ГІГ Г­ГЁГ¶ГЁГї ГЎГ®Г«ГјГ№ГҐ Г·ГҐГ¬ ГўГЁГ¤ГЁГ¬Г®Г±ГІГј 
 					fDistanceToWall = game.player.Depth;
 				}
 				else
 				{
-					if (game.map[(int)nTestY][(int)nTestX] == '#') // проверка на то что луч врезался в стену
+					if (game.map[(int)nTestY][(int)nTestX] == '#') // ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГІГ® Г·ГІГ® Г«ГіГ· ГўГ°ГҐГ§Г Г«Г±Гї Гў Г±ГІГҐГ­Гі
 					{
 						HitWall = true;
 
 					}
 
-					if ((int)nTestY == (int)game.player.Y && (int)nTestX == (int)game.player.X && (RealTime - game.enemy[i].tmpTime) >= 5000)//проверка на поподание
+					if ((int)nTestY == (int)game.player.Y && (int)nTestX == (int)game.player.X && (RealTime - game.enemy[i].tmpTime) >= 5000)//ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГЇГ®ГЇГ®Г¤Г Г­ГЁГҐ
 					{
 						game.player.HP -= game.enemy[i].damage;
 						game.enemy[i].tmpTime = SDL_GetTicks();

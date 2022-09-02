@@ -64,6 +64,8 @@ struct Player
 	float Depth = 12.0;
 	float Speed = 0.75;
 	int type_weapon=0;
+	int map_num = 0;
+	bool key = false;
 };
 
 struct RGB
@@ -112,7 +114,7 @@ struct Game {
 	Texture texture;
 
 
-	//карта
+	//ГЄГ Г°ГІГ 
 	char map[100][101];
 	int map_height; 
 	int map_width;
