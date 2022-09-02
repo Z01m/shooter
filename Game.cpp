@@ -136,34 +136,34 @@ void GameUpdate(Game& game, unsigned int RealTime)
 void Game_draw_process(Game& game)
 {
 	SDL_Rect r = { 0,0,16,16 };
-	for (int x = 0; x < game.winWidth; x += (r.w)) // x проходит по всей длине экрана с заданным шагом 
+	for (int x = 0; x < game.winWidth; x += (r.w)) // x ГЇГ°Г®ГµГ®Г¤ГЁГІ ГЇГ® ГўГ±ГҐГ© Г¤Г«ГЁГ­ГҐ ГЅГЄГ°Г Г­Г  Г± Г§Г Г¤Г Г­Г­Г»Г¬ ГёГ ГЈГ®Г¬ 
 	{
 
 		r.x = x;
-		float fRayAngle = (game.player.direct - game.player.FOV / 2.0f) + ((float)x / (float)game.winWidth) * game.player.FOV;  //расчет каждого луча относительно x
+		float fRayAngle = (game.player.direct - game.player.FOV / 2.0f) + ((float)x / (float)game.winWidth) * game.player.FOV;  //Г°Г Г±Г·ГҐГІ ГЄГ Г¦Г¤Г®ГЈГ® Г«ГіГ·Г  Г®ГІГ­Г®Г±ГЁГІГҐГ«ГјГ­Г® x
 
-		float fStepSize = 0.1f; // шаг на который увеличивается расстояние
-		float fDistanceToWall = 0.0f; //дистанция до стены
+		float fStepSize = 0.1f; // ГёГ ГЈ Г­Г  ГЄГ®ГІГ®Г°Г»Г© ГіГўГҐГ«ГЁГ·ГЁГўГ ГҐГІГ±Гї Г°Г Г±Г±ГІГ®ГїГ­ГЁГҐ
+		float fDistanceToWall = 0.0f; //Г¤ГЁГ±ГІГ Г­Г¶ГЁГї Г¤Г® Г±ГІГҐГ­Г»
 
-		bool HitWall = false; // врезался ли в стену
+		bool HitWall = false; // ГўГ°ГҐГ§Г Г«Г±Гї Г«ГЁ Гў Г±ГІГҐГ­Гі
 		bool HitDoor = false;
 
 		float fEyeX = sinf(fRayAngle);
 		float fEyeY = cosf(fRayAngle);
 
-		while (!HitWall && fDistanceToWall < game.player.Depth && !HitDoor ) // пока луч не уперся в стену и меньше чем поле зрения цикл будет работать
+		while (!HitWall && fDistanceToWall < game.player.Depth && !HitDoor ) // ГЇГ®ГЄГ  Г«ГіГ· Г­ГҐ ГіГЇГҐГ°Г±Гї Гў Г±ГІГҐГ­Гі ГЁ Г¬ГҐГ­ГјГёГҐ Г·ГҐГ¬ ГЇГ®Г«ГҐ Г§Г°ГҐГ­ГЁГї Г¶ГЁГЄГ« ГЎГіГ¤ГҐГІ Г°Г ГЎГ®ГІГ ГІГј
 		{
 			fDistanceToWall += fStepSize;
-			int nTestX = (int)(game.player.X + fEyeX * fDistanceToWall); // координаты точки считаются каждый шаг позже будут сравниваться с координатами стен
+			int nTestX = (int)(game.player.X + fEyeX * fDistanceToWall); // ГЄГ®Г®Г°Г¤ГЁГ­Г ГІГ» ГІГ®Г·ГЄГЁ Г±Г·ГЁГІГ ГѕГІГ±Гї ГЄГ Г¦Г¤Г»Г© ГёГ ГЈ ГЇГ®Г§Г¦ГҐ ГЎГіГ¤ГіГІ Г±Г°Г ГўГ­ГЁГўГ ГІГјГ±Гї Г± ГЄГ®Г®Г°Г¤ГЁГ­Г ГІГ Г¬ГЁ Г±ГІГҐГ­
 			int nTestY = (int)(game.player.Y + fEyeY * fDistanceToWall);
 			if (nTestX < 0 || nTestX >= game.map_width || nTestY < 0 || nTestY >= game.map_height)
 			{
-				HitWall = true;		//если дистаниция больще чем видимость 
+				HitWall = true;		//ГҐГ±Г«ГЁ Г¤ГЁГ±ГІГ Г­ГЁГ¶ГЁГї ГЎГ®Г«ГјГ№ГҐ Г·ГҐГ¬ ГўГЁГ¤ГЁГ¬Г®Г±ГІГј 
 				fDistanceToWall = game.player.Depth;
 			}
 			else
 			{
-				if (game.map[(int)nTestY][(int)nTestX] == '#') // проверка на то что луч врезался в стену
+				if (game.map[(int)nTestY][(int)nTestX] == '#') // ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГІГ® Г·ГІГ® Г«ГіГ· ГўГ°ГҐГ§Г Г«Г±Гї Гў Г±ГІГҐГ­Гі
 				{
 					HitWall = true;
 				}
@@ -174,10 +174,10 @@ void Game_draw_process(Game& game)
 			}
 		}
 
-		int nCeiling = (float)(game.winHeight / 2.0) - game.winHeight / ((float)fDistanceToWall);//расчет линии неба или потолка(тут без разницы)
-		int nFloor = game.winHeight - nCeiling + 48;//расчет линии пола
-		// раскраска стен и неба
-		if (!HitDoor && fDistanceToWall <= game.player.Depth / 4.0f) // ифы красят стены в зависимости от дальности в задданный цвет
+		int nCeiling = (float)(game.winHeight / 2.0) - game.winHeight / ((float)fDistanceToWall);//Г°Г Г±Г·ГҐГІ Г«ГЁГ­ГЁГЁ Г­ГҐГЎГ  ГЁГ«ГЁ ГЇГ®ГІГ®Г«ГЄГ (ГІГіГІ ГЎГҐГ§ Г°Г Г§Г­ГЁГ¶Г»)
+		int nFloor = game.winHeight - nCeiling + 48;//Г°Г Г±Г·ГҐГІ Г«ГЁГ­ГЁГЁ ГЇГ®Г«Г 
+		// Г°Г Г±ГЄГ°Г Г±ГЄГ  Г±ГІГҐГ­ ГЁ Г­ГҐГЎГ 
+		if (!HitDoor && fDistanceToWall <= game.player.Depth / 4.0f) // ГЁГґГ» ГЄГ°Г Г±ГїГІ Г±ГІГҐГ­Г» Гў Г§Г ГўГЁГ±ГЁГ¬Г®Г±ГІГЁ Г®ГІ Г¤Г Г«ГјГ­Г®Г±ГІГЁ Гў Г§Г Г¤Г¤Г Г­Г­Г»Г© Г¶ГўГҐГІ
 		{
 			game.rgb.red = 136;
 			game.rgb.green = 69;
@@ -214,24 +214,22 @@ void Game_draw_process(Game& game)
 			game.rgb.blue = 39;
 		}
 
-
-
-		for (int y = 0; y < game.winHeight; y += (r.h)) // проход по высоте экрана
+		for (int y = 0; y < game.winHeight; y += (r.h)) // ГЇГ°Г®ГµГ®Г¤ ГЇГ® ГўГ»Г±Г®ГІГҐ ГЅГЄГ°Г Г­Г 
 		{
 			r.y = y;
-			if (y <= nCeiling) //пока y не опустился ниже уровня потолка будет окрашивать в цвет
+			if (y <= nCeiling) //ГЇГ®ГЄГ  y Г­ГҐ Г®ГЇГіГ±ГІГЁГ«Г±Гї Г­ГЁГ¦ГҐ ГіГ°Г®ГўГ­Гї ГЇГ®ГІГ®Г«ГЄГ  ГЎГіГ¤ГҐГІ Г®ГЄГ°Г ГёГЁГўГ ГІГј Гў Г¶ГўГҐГІ
 			{
 				SDL_SetRenderDrawColor(ren, 137, 43, 227, 255);
 				SDL_RenderFillRect(ren, &r);
 			}
-			else if (y > nCeiling && y <= nFloor) //раскраска стен в заданный заранее
+			else if (y > nCeiling && y <= nFloor) //Г°Г Г±ГЄГ°Г Г±ГЄГ  Г±ГІГҐГ­ Гў Г§Г Г¤Г Г­Г­Г»Г© Г§Г Г°Г Г­ГҐГҐ
 			{
 				SDL_SetRenderDrawColor(ren, game.rgb.red, game.rgb.green, game.rgb.blue, 255);
 				SDL_RenderFillRect(ren, &r);
 			}
-			else // пол
+			else // ГЇГ®Г«
 			{
-				// раскраска пола в зависимости от его удаленности от игрока
+				// Г°Г Г±ГЄГ°Г Г±ГЄГ  ГЇГ®Г«Г  Гў Г§Г ГўГЁГ±ГЁГ¬Г®Г±ГІГЁ Г®ГІ ГҐГЈГ® ГіГ¤Г Г«ГҐГ­Г­Г®Г±ГІГЁ Г®ГІ ГЁГЈГ°Г®ГЄГ 
 				float b = 1.0f - (((float)y - game.winHeight / 2.0f) / ((float)game.winHeight / 2.0f));
 				if (b < 0.25)		SDL_SetRenderDrawColor(ren, 34, 139, 34, 255);
 				else if (b < 0.5)	SDL_SetRenderDrawColor(ren, 34, 129, 34, 255);
@@ -244,9 +242,7 @@ void Game_draw_process(Game& game)
 		}
 
 	}
-	 r = { 0,0,4,4 };// тут начинается отображение карты
-
-
+	 r = { 0,0,4,4 };// ГІГіГІ Г­Г Г·ГЁГ­Г ГҐГІГ±Гї Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГҐ ГЄГ Г°ГІГ»
 	for (int x = 0; x < game.map_width; x++)
 	{
 		r.x = x * 12;
@@ -271,7 +267,6 @@ void Game_draw_process(Game& game)
 
 		}
 	}
-	
 	
 	SDL_SetRenderDrawColor(ren, 0, 100, 0, 255);
 	r.x = game.player.X * 12;

@@ -7,11 +7,11 @@
 void movement(Game& game,unsigned int RealTime)
 {
 	unsigned int del_time = 0;
-	if (!game.keys.right && game.keys.left)  // поворот камеры
+	if (!game.keys.right && game.keys.left)  // ГЇГ®ГўГ®Г°Г®ГІ ГЄГ Г¬ГҐГ°Г»
 		game.player.direct -= (game.player.Speed * 0.15f);
 	if (game.keys.right && !game.keys.left)
 		game.player.direct += (game.player.Speed * 0.15f);
-	if (game.keys.up && !game.keys.down) //движение
+	if (game.keys.up && !game.keys.down) //Г¤ГўГЁГ¦ГҐГ­ГЁГҐ
 	{
 
 		game.player.X += sinf(game.player.direct) * game.player.Speed * 0.25;
@@ -110,7 +110,7 @@ void LoadMap(Game& game, int num)
 	FILE* ft;
 	if (fopen_s(&ft, MAP_FILENAMES[num], "rt") != 0)
 	{
-		printf("Ошибка чтения!");
+		printf("ГЋГёГЁГЎГЄГ  Г·ГІГҐГ­ГЁГї!");
 		exit(1);
 	}
 	else
